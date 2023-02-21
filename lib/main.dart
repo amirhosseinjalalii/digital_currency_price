@@ -1,12 +1,20 @@
+import 'package:digital_currency_price/providers/theme_provider.dart';
+import 'package:digital_currency_price/ui/ui_hellper/theme_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations(
     [DeviceOrientation.portraitUp],
   );
-  runApp(const MyMaterialApp());
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (context) => ThemeProvider()),
+    ],
+    child: const MyMaterialApp(),
+  ));
 }
 
 class MyMaterialApp extends StatefulWidget {
@@ -19,15 +27,23 @@ class MyMaterialApp extends StatefulWidget {
 class _MyMaterialAppState extends State<MyMaterialApp> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Directionality(
-        textDirection: TextDirection.ltr,
-        child: Scaffold(
-          appBar: AppBar(),
-          body: Container(child: const Text("digital currency app")),
+    return Consumer<ThemeProvider>(builder: (context, themeProvider, child) {
+      return MaterialApp(
+        themeMode: themeProvider.themeMode,
+        theme: MyThemes.lightTheme,
+        darkTheme: MyThemes.darkTheme,
+        debugShowCheckedModeBanner: false,
+        home: Directionality(
+          textDirection: TextDirection.ltr,
+          child: Scaffold(
+            appBar: AppBar(
+              actions: [ThemeSwitcher()],
+              title: const Text("digital currency"),
+            ),
+            body: Container(child: const Text("digital currency app")),
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 }
