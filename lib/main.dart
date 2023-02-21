@@ -1,4 +1,5 @@
 import 'package:digital_currency_price/providers/theme_provider.dart';
+import 'package:digital_currency_price/ui/main_wrapper.dart';
 import 'package:digital_currency_price/ui/ui_hellper/theme_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -33,15 +34,9 @@ class _MyMaterialAppState extends State<MyMaterialApp> {
         theme: MyThemes.lightTheme,
         darkTheme: MyThemes.darkTheme,
         debugShowCheckedModeBanner: false,
-        home: Directionality(
+        home: const Directionality(
           textDirection: TextDirection.ltr,
-          child: Scaffold(
-            appBar: AppBar(
-              actions: [ThemeSwitcher()],
-              title: const Text("digital currency"),
-            ),
-            body: Container(child: const Text("digital currency app")),
-          ),
+          child: MainWrapper(),
         ),
       );
     });
