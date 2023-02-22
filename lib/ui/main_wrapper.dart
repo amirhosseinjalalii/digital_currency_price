@@ -17,11 +17,14 @@ class _MainWrapperState extends State<MainWrapper> {
 
   @override
   Widget build(BuildContext context) {
+    var primaryColor = Theme.of(context).primaryColor;
+    var primaryColorLight = Theme.of(context).primaryColorLight;
+
     return Scaffold(
       body: PageView(
         physics: const BouncingScrollPhysics(),
         controller: _myPage,
-        children: const [
+        children: [
           HomeScreen(),
           MarketViewScreen(),
           ProfileScreen(),
@@ -32,8 +35,12 @@ class _MainWrapperState extends State<MainWrapper> {
         controller: _myPage,
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: primaryColor,
         onPressed: () {},
-        child: const Icon(Icons.compare_arrows_outlined),
+        child: Icon(
+          Icons.compare_arrows_outlined,
+          color: primaryColorLight,
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
