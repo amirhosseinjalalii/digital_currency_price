@@ -1,3 +1,4 @@
+import 'package:digital_currency_price/providers/crypto_data_provider.dart';
 import 'package:digital_currency_price/providers/theme_provider.dart';
 import 'package:digital_currency_price/ui/main_wrapper.dart';
 import 'package:digital_currency_price/ui/ui_hellper/theme_switcher.dart';
@@ -13,6 +14,7 @@ void main() {
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (context) => ThemeProvider()),
+      ChangeNotifierProvider(create: (context) => CryptoDataProvider()),
     ],
     child: const MyMaterialApp(),
   ));

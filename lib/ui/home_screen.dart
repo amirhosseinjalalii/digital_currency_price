@@ -1,8 +1,12 @@
+import 'package:digital_currency_price/providers/crypto_data_provider.dart';
+import 'package:digital_currency_price/providers/response_model.dart';
 import 'package:digital_currency_price/ui/ui_hellper/home_page_view.dart';
 import 'package:digital_currency_price/ui/ui_hellper/theme_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:marquee/marquee.dart';
+import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -14,6 +18,17 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final PageController _pageViewController = PageController(initialPage: 0);
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    final cryptoProvider =
+        Provider.of<CryptoDataProvider>(context, listen: false);
+
+    cryptoProvider.getTopMarketCapData();
+  }
 
   var defaultChoiceIndex = 0;
 
@@ -29,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
     TextTheme textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      drawer: Drawer(),
+      drawer: const Drawer(),
       appBar: AppBar(
         backgroundColor: primaryColor,
         actions: const [ThemeSwitcher()],
@@ -128,6 +143,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
 
+              //choice chip
               Padding(
                 padding: const EdgeInsets.only(right: 5, left: 5),
                 child: Row(
@@ -159,6 +175,145 @@ class _HomeScreenState extends State<HomeScreen> {
                     )
                   ],
                 ),
+              ),
+
+              SizedBox(
+                height: 500,
+                child: Consumer<CryptoDataProvider>(
+                    builder: (context, cryptoDataProvider, child) {
+                  switch (cryptoDataProvider.state.status) {
+                    case Status.LOADING:
+                      return SizedBox(
+                        height: 80,
+                        child: Shimmer.fromColors(
+                          baseColor: Colors.grey.shade400,
+                          highlightColor: Colors.white,
+                          child: ListView.builder(
+                              itemCount: 10,
+                              itemBuilder: (context, index) {
+                                return Row(
+                                  children: [
+                                    const Padding(
+                                      padding: EdgeInsets.only(
+                                          top: 8, bottom: 8, left: 8),
+                                      child: CircleAvatar(
+                                        backgroundColor: Colors.white,
+                                        radius: 30,
+                                        child: Icon(Icons.add),
+                                      ),
+                                    ),
+                                    Flexible(
+                                      fit: FlexFit.tight,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                          right: 8,
+                                          left: 8,
+                                        ),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            SizedBox(
+                                              width: 50,
+                                              height: 15,
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                ),
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.only(top: 8),
+                                              child: SizedBox(
+                                                width: 25,
+                                                height: 15,
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.white,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    Flexible(
+                                      fit: FlexFit.tight,
+                                      child: SizedBox(
+                                        width: 70,
+                                        height: 49,
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(20)),
+                                        ),
+                                      ),
+                                    ),
+                                    Flexible(
+                                      fit: FlexFit.tight,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                          right: 8,
+                                          left: 8,
+                                        ),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.end,
+                                          children: [
+                                            SizedBox(
+                                              width: 50,
+                                              height: 15,
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                ),
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.only(top: 8),
+                                              child: SizedBox(
+                                                width: 25,
+                                                height: 15,
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.white,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              }),
+                        ),
+                      );
+                    case Status.COMPLETED:
+                      return const Text("done!");
+
+                    case Status.ERROR:
+                      return Text(cryptoDataProvider.state.message);
+
+                    default:
+                      return Container();
+                  }
+                }),
               )
             ],
           ),
