@@ -1,3 +1,5 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:digital_currency_price/models/crypto_model/crypto_data.dart';
 import 'package:digital_currency_price/providers/crypto_data_provider.dart';
 import 'package:digital_currency_price/providers/response_model.dart';
 import 'package:digital_currency_price/ui/ui_hellper/home_page_view.dart';
@@ -40,6 +42,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var height = MediaQuery.of(context).size.height;
+
     var primaryColor = Theme.of(context).primaryColor;
     TextTheme textTheme = Theme.of(context).textTheme;
 
@@ -55,6 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
         width: double.infinity,
         height: double.infinity,
         child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
           scrollDirection: Axis.vertical,
           child: Column(
             children: [
@@ -305,7 +310,68 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       );
                     case Status.COMPLETED:
-                      return const Text("done!");
+                      List<CryptoData>? model = cryptoDataProvider
+                          .dataFuture.data!.cryptoCurrencyList;
+
+                      return ListView.separated(
+                        physics: const BouncingScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          var number = index + 1;
+                          var tokenId = model![index].id;
+                          return SizedBox(
+                            height: height * 0.075,
+                            child: Row(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 10),
+                                  child: Text(
+                                    number.toString(),
+                                    style: textTheme.bodySmall,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 10, right: 15),
+                                  child: CachedNetworkImage(
+                                      fadeInDuration:
+                                          const Duration(milliseconds: 500),
+                                      height: 32,
+                                      width: 32,
+                                      imageUrl:
+                                          "https://s2.coinmarketcap.com/static/img/coins/32x32/$tokenId.png",
+                                      placeholder: (context, url) =>
+                                          const CircularProgressIndicator(),
+                                      errorWidget: (context, url, error) {
+                                        return const Icon(Icons.error);
+                                      }),
+                                ),
+                                Flexible(
+                                    fit: FlexFit.tight,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          model[index].name!,
+                                          style: textTheme.bodySmall,
+                                        ),
+                                        Text(
+                                          model[index].symbol!,
+                                          style: textTheme.labelSmall,
+                                        ),
+                                      ],
+                                    ))
+                              ],
+                            ),
+                          );
+                        },
+                        separatorBuilder: (context, index) {
+                          return const Divider();
+                        },
+                        itemCount: 10,
+                      );
 
                     case Status.ERROR:
                       return Text(cryptoDataProvider.state.message);
