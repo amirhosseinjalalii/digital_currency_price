@@ -1,10 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:digital_currency_price/helpers/decimal_rounder.dart';
 import 'package:digital_currency_price/models/crypto_model/crypto_data.dart';
 import 'package:digital_currency_price/providers/crypto_data_provider.dart';
 import 'package:digital_currency_price/providers/response_model.dart';
 import 'package:digital_currency_price/ui/ui_hellper/home_page_view.dart';
 import 'package:digital_currency_price/ui/ui_hellper/theme_switcher.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:marquee/marquee.dart';
 import 'package:provider/provider.dart';
@@ -318,6 +320,26 @@ class _HomeScreenState extends State<HomeScreen> {
                         itemBuilder: (context, index) {
                           var number = index + 1;
                           var tokenId = model![index].id;
+
+                          MaterialColor filterColor =
+                              DecimalRounder.setColorFilter(
+                                  model[index].quotes![0].percentChange30d);
+
+                          var finalPrice = DecimalRounder.removePriceDecimals(
+                              model[index].quotes![0].price);
+
+                          // percent change setup decimals and colors
+                          var percentChange =
+                              DecimalRounder.removePercentDecimals(
+                                  model[index].quotes![0].percentChange30d);
+
+                          Color percentColor =
+                              DecimalRounder.setPercentChangesColor(
+                                  model[index].quotes![0].percentChange30d);
+                          Icon percentIcon =
+                              DecimalRounder.setPercentChangesIcon(
+                                  model[index].quotes![0].percentChange30d);
+
                           return SizedBox(
                             height: height * 0.075,
                             child: Row(
@@ -346,23 +368,63 @@ class _HomeScreenState extends State<HomeScreen> {
                                       }),
                                 ),
                                 Flexible(
-                                    fit: FlexFit.tight,
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          model[index].name!,
-                                          style: textTheme.bodySmall,
-                                        ),
-                                        Text(
-                                          model[index].symbol!,
-                                          style: textTheme.labelSmall,
-                                        ),
-                                      ],
-                                    ))
+                                  fit: FlexFit.tight,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        model[index].name!,
+                                        style: textTheme.bodySmall,
+                                      ),
+                                      Text(
+                                        model[index].symbol!,
+                                        style: textTheme.labelSmall,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Flexible(
+                                  fit: FlexFit.tight,
+                                  child: ColorFiltered(
+                                    colorFilter: ColorFilter.mode(
+                                      filterColor,
+                                      BlendMode.srcATop,
+                                    ),
+                                    child: SvgPicture.network(
+                                      "https://s3.coinmarketcap.com/generated/sparklines/web/30d/2781/$tokenId.svg",
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                    child: Padding(
+                                  padding: const EdgeInsets.only(right: 10),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        "\$$finalPrice",
+                                        style: textTheme.bodySmall,
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          percentIcon,
+                                          Text(
+                                            "$percentChange%",
+                                            style: GoogleFonts.ubuntu(
+                                              color: percentColor,
+                                              fontSize: 13,
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                )),
                               ],
                             ),
                           );
