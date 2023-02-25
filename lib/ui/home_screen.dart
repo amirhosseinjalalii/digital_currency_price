@@ -45,6 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
+    final cryptoProvider = Provider.of<CryptoDataProvider>(context);
 
     var primaryColor = Theme.of(context).primaryColor;
     TextTheme textTheme = Theme.of(context).textTheme;
@@ -164,6 +165,18 @@ class _HomeScreenState extends State<HomeScreen> {
                             setState(() {
                               defaultChoiceIndex =
                                   value ? index : defaultChoiceIndex;
+
+                              switch (index) {
+                                case 0:
+                                  cryptoProvider.getTopMarketCapData();
+                                  break;
+                                case 1:
+                                  cryptoProvider.getTopGainersData();
+                                  break;
+                                case 2:
+                                  cryptoProvider.getTopLosersData();
+                                  break;
+                              }
                             });
                           },
                           selectedColor: primaryColor,
@@ -323,7 +336,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                           MaterialColor filterColor =
                               DecimalRounder.setColorFilter(
-                                  model[index].quotes![0].percentChange30d);
+                                  model[index].quotes![0].percentChange24h);
 
                           var finalPrice = DecimalRounder.removePriceDecimals(
                               model[index].quotes![0].price);
@@ -331,14 +344,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           // percent change setup decimals and colors
                           var percentChange =
                               DecimalRounder.removePercentDecimals(
-                                  model[index].quotes![0].percentChange30d);
+                                  model[index].quotes![0].percentChange24h);
 
                           Color percentColor =
                               DecimalRounder.setPercentChangesColor(
-                                  model[index].quotes![0].percentChange30d);
+                                  model[index].quotes![0].percentChange24h);
                           Icon percentIcon =
                               DecimalRounder.setPercentChangesIcon(
-                                  model[index].quotes![0].percentChange30d);
+                                  model[index].quotes![0].percentChange24h);
 
                           return SizedBox(
                             height: height * 0.075,
@@ -375,6 +388,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
+                                        overflow: TextOverflow.ellipsis,
                                         model[index].name!,
                                         style: textTheme.bodySmall,
                                       ),
