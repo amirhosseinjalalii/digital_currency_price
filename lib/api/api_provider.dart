@@ -3,8 +3,7 @@ import 'package:dio/dio.dart';
 
 class ApiProvider {
   dynamic getAllCryptoData() async {
-    var response;
-    response = await Dio().get(ApiConstant.getAllCryptoUrl);
+    final response = await Dio().get(ApiConstant.getAllCryptoUrl);
     return response;
   }
 
